@@ -6,6 +6,10 @@ from django.conf import settings
 from fatsecret import Fatsecret
 from requests.compat import urljoin
 from .models import BotUser
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
@@ -52,7 +56,13 @@ def authenticate(request):
         user_id = int(request.GET['user_id'])
         verifier_pin = request.args.get('oauth_verifier')
         session_token = fs.authenticate(verifier_pin)
-        print(user_id, "token is", session_token)
+        logger.info("Successful authentication. Token is {}, user id is {}".format(session_token, user_id))
+
+        user = BotUser.objects.get(bot_user_id=user_id)
+        user.fatsecret_oauth_token = session_token[0]
+        user.fatsecret_oauth_token_secret = session_token[1]
+        user.save()
+
         return render(request, "fat_secret_api/auth_complete.html")
     else:
         return JsonResponse({"error": "Authentication cannot be completed"})
