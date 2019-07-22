@@ -3,6 +3,7 @@ logs/
 db.sqlite3
 .idea
 GenotekDietBotAPI/secret_settings.py
+static/admin/
 
 tokens.dat.*
 
