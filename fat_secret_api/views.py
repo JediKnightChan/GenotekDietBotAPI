@@ -12,8 +12,9 @@ from .models import BotUser
 def create_bot_user(request):
     if request.POST['token'] == settings.BOTMOTHER_TOKEN:
         user_id = request.POST['user_id']
-        user = BotUser.objects.create(bot_user_id=user_id)
-        user.save()
+        if BotUser.objects.filter(bot_user_id=user_id).first() is None:
+            user = BotUser.objects.create(bot_user_id=user_id)
+            user.save()
 
 
 @csrf_exempt
