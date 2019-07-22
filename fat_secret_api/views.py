@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def create_bot_user(request):
-    if request.POST['token'] == settings.BOTMOTHER_TOKEN:
+    if request.POST.get('token') == settings.BOTMOTHER_TOKEN:
         user_id = request.POST['user_id']
         if BotUser.objects.filter(bot_user_id=user_id).first() is None:
             user = BotUser.objects.create(bot_user_id=user_id)
@@ -26,7 +26,7 @@ def create_bot_user(request):
 @csrf_exempt
 def create_fatsecret_profile(request):
     fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
-    if request.POST['token'] == settings.BOTMOTHER_TOKEN:
+    if request.POST.get('token') == settings.BOTMOTHER_TOKEN:
         session_token = fs.profile_create('new_user_001')
         user_id = request.POST['user_id']
 
@@ -40,7 +40,7 @@ def create_fatsecret_profile(request):
 
 @csrf_exempt
 def get_auth_url(request):
-    if request.POST['token'] == settings.BOTMOTHER_TOKEN:
+    if request.POST.get('token') == settings.BOTMOTHER_TOKEN:
         fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
         user_id = request.POST['user_id']
         callback_url = urljoin(settings.REDIRECT_HOST, reverse('authenticate'))
