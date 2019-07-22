@@ -15,6 +15,8 @@ def create_bot_user(request):
         if BotUser.objects.filter(bot_user_id=user_id).first() is None:
             user = BotUser.objects.create(bot_user_id=user_id)
             user.save()
+        return JsonResponse({"success": True})
+    return JsonResponse({"success": False, "error": "Token mismatched"}, status=500)
 
 
 @csrf_exempt
@@ -28,6 +30,8 @@ def create_fatsecret_profile(request):
         user.fatsecret_oauth_token = session_token[0]
         user.fatsecret_oauth_token_secret = session_token[1]
         user.save()
+        return JsonResponse({"success": True})
+    return JsonResponse({"success": False, "error": "Token mismatched"}, status=500)
 
 
 @csrf_exempt
@@ -39,6 +43,7 @@ def get_auth_url(request):
         callback_url = urljoin(callback_url, '?user_id={}'.format(user_id))
         auth_url = fs.get_authorize_url(callback_url=callback_url)
         return JsonResponse({"url": auth_url})
+    return JsonResponse({"success": False, "error": "Token mismatched"}, status=500)
 
 
 def authenticate(request):
