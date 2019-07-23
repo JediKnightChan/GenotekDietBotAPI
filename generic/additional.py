@@ -7,6 +7,7 @@ def api_safe_run(logger, token_required=False):
         def func_wrapper(request, *args, **kwargs):
             if token_required:
                 if request.POST.get('token') != settings.BOTMOTHER_TOKEN:
+                    logger.info("{}: Token mismatched. Body request is {}".format(func.__name__, request.body))
                     return JsonResponse({'error': 'Token mismatched', 'success': False}, status=400)
 
             try:
