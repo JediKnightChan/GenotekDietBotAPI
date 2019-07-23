@@ -6,14 +6,13 @@ import traceback
 def api_safe_run(logger, token_required=False):
     def decorator(func):
         def func_wrapper(request, *args, **kwargs):
-            if token_required:
-                if request.POST.get('token') != settings.BOTMOTHER_TOKEN:
-                    logger.error("{}: Token mismatched. Get {}, expected {}".format(func.__name__,
-                                                                                    request.POST.get('token'),
-                                                                                    settings.BOTMOTHER_TOKEN))
-                    return JsonResponse({'error': 'Token mismatched', 'success': False}, status=400)
-
             try:
+                if token_required:
+                    if request.POST.get('token', None) != settings.BOTMOTHER_TOKEN:
+                        logger.error("{}: Token mismatched. Get {}, expected {}".format(func.__name__,
+                                                                                        request.POST.get('token', None),
+                                                                                        settings.BOTMOTHER_TOKEN))
+                        return JsonResponse({'error': 'Token mismatched', 'success': False}, status=400)
                 return func(request, *args, **kwargs)
             except ZeroDivisionError:
                 logger.error("{}: ZeroDivisionError. Body request is {}".format(func.__name__, request.body))
