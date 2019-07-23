@@ -33,7 +33,11 @@ ALLOWED_HOSTS = [
     "jediknightchannel.ru",
     "jediknight.pythonanywhere.com"
 ]
-REDIRECT_HOST = "http://{}/".format(ALLOWED_HOSTS[0])
+
+if ALLOWED_HOSTS[0] == "jediknightchannel.ru":
+    REDIRECT_HOST = "http://{}:8777/".format(ALLOWED_HOSTS[0])
+else:
+    REDIRECT_HOST = "http://{}/".format(ALLOWED_HOSTS[0])
 
 # Application definition
 
