@@ -35,7 +35,7 @@ ALLOWED_HOSTS = [
 ]
 
 if ALLOWED_HOSTS[0] == "jediknightchannel.ru":
-    REDIRECT_HOST = "http://{}:8777/".format(ALLOWED_HOSTS[0])
+    REDIRECT_HOST = "https://{}:8777/".format(ALLOWED_HOSTS[0])
 else:
     REDIRECT_HOST = "http://{}/".format(ALLOWED_HOSTS[0])
 
