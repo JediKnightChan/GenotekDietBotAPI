@@ -32,8 +32,6 @@ def create_fatsecret_profile(request):
     user_id = request.POST['user_id']
     if BotUser.objects.filter(bot_user_id=user_id).first() is None:
         return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
-    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account != "NO":
-        return JsonResponse({"success": False, "error": "User with this id already has a FS account"})
 
     try:
         session_token = fs.profile_create(str(user_id))
