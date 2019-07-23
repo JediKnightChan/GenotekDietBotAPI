@@ -63,7 +63,7 @@ def authenticate(request):
     fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
     if request.GET.get('oauth_verifier', None):
         user_id = int(request.GET['user_id'])
-        verifier_pin = request.args.get('oauth_verifier')
+        verifier_pin = request.GET['oauth_verifier']
         session_token = fs.authenticate(verifier_pin)
         logger.info("Successful authentication. Token is {}, user id is {}".format(session_token, user_id))
 
