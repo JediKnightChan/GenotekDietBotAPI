@@ -31,7 +31,8 @@ DEBUG = True
 # ALLOWED_HOSTS[0] is used for FatSecret redirects, so it should be main address!
 ALLOWED_HOSTS = [
     "jediknightchannel.ru",
-    "jediknight.pythonanywhere.com"
+    "jediknight.pythonanywhere.com",
+    "127.0.0.1"
 ]
 
 if ALLOWED_HOSTS[0] == "jediknightchannel.ru":
