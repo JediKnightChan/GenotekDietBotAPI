@@ -66,8 +66,6 @@ def get_auth_url(request):
     user_id = request.POST['user_id']
     if BotUser.objects.filter(bot_user_id=user_id).first() is None:
         return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
-    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account != "NO":
-        return JsonResponse({"success": False, "error": "User with this id already has a FS account"})
 
     callback_url = urljoin(settings.REDIRECT_HOST, reverse('authenticate'))
     callback_url = urljoin(callback_url, '?user_id={}'.format(user_id))
