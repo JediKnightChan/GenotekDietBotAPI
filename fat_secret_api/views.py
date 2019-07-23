@@ -111,7 +111,7 @@ def authenticate_check_success(request):
     user_id = int(request.POST['user_id'])
     if BotUser.objects.filter(bot_user_id=user_id).first() is None:
         return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
-    elif BotUser.objects.filter(bot_user_id=user_id).first() == "OLD":
+    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account == "OLD":
         return JsonResponse({"success": True, "auth_success": True})
     else:
         return JsonResponse({"success": True, "auth_success": False})
