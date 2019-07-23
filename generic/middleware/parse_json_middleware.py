@@ -14,7 +14,7 @@ class JSONMiddleware:
     def __call__(self, request):
         if request.META.get('CONTENT_TYPE') and 'application/json' in request.META.get('CONTENT_TYPE'):
             try:
-                data = json.loads(request.body)
+                data = json.loads(request.body.decode('utf-8'))
 
                 q_data = QueryDict('', mutable=True)
                 for key, value in data.items():
