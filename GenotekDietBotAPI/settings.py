@@ -30,6 +30,7 @@ DEBUG = True
 
 # ALLOWED_HOSTS[0] is used for FatSecret redirects, so it should be main address!
 ALLOWED_HOSTS = [
+    "jediknightchannel.ru",
     "jediknight.pythonanywhere.com"
 ]
 REDIRECT_HOST = "http://{}/".format(ALLOWED_HOSTS[0])
