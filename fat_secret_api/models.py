@@ -16,3 +16,6 @@ class BotUser(models.Model):
     )
     fatsecret_oauth_token = models.CharField(max_length=100, blank=True, null=True)
     fatsecret_oauth_token_secret = models.CharField(max_length=100, blank=True, null=True)
+
+    fs_request_token = models.CharField(max_length=100, blank=True, null=True)
+    fs_request_token_secret = models.CharField(max_length=100, blank=True, null=True)

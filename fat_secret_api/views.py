@@ -55,6 +55,13 @@ def get_auth_url(request):
     callback_url = urljoin(settings.REDIRECT_HOST, reverse('authenticate'))
     callback_url = urljoin(callback_url, '?user_id={}'.format(user_id))
     auth_url = fs.get_authorize_url(callback_url=callback_url)
+
+    # Saving request token and secret for further fs instance creation in 'authenticate'
+    user = BotUser.objects.get(bot_user_id=user_id)
+    user.fs_request_token = fs.request_token
+    user.fs_request_token_secret = fs.request_token_secret
+    user.save()
+
     return JsonResponse({"url": auth_url, "success": True})
 
 
@@ -64,10 +71,15 @@ def authenticate(request):
     if request.GET.get('oauth_verifier', None):
         user_id = int(request.GET['user_id'])
         verifier_pin = request.GET['oauth_verifier']
+
+        # Changing fs to use variables from 1st step of 3-Legged OAuth
+        user = BotUser.objects.get(bot_user_id=user_id)
+        fs.request_token = user.fs_request_token
+        fs.request_token_secret = user.fs_request_token_secret
+
         session_token = fs.authenticate(verifier_pin)
         logger.info("Successful authentication. Token is {}, user id is {}".format(session_token, user_id))
 
-        user = BotUser.objects.get(bot_user_id=user_id)
         user.fatsecret_account = 'OLD'
         user.fatsecret_oauth_token = session_token[0]
         user.fatsecret_oauth_token_secret = session_token[1]
