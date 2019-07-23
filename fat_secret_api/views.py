@@ -28,6 +28,11 @@ def create_bot_user(request):
 def create_fatsecret_profile(request):
     fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
     user_id = request.POST['user_id']
+    if BotUser.objects.filter(bot_user_id=user_id).first() is None:
+        return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
+    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account != "NO":
+        return JsonResponse({"success": False, "error": "User with this id already has a FS account"})
+
     session_token = fs.profile_create(str(user_id))
     user = BotUser.objects.get(bot_user_id=user_id)
     user.fatsecret_account = 'NEW'
@@ -42,9 +47,13 @@ def create_fatsecret_profile(request):
 def get_auth_url(request):
     fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
     user_id = request.POST['user_id']
+    if BotUser.objects.filter(bot_user_id=user_id).first() is None:
+        return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
+    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account != "NO":
+        return JsonResponse({"success": False, "error": "User with this id already has a FS account"})
+
     callback_url = urljoin(settings.REDIRECT_HOST, reverse('authenticate'))
     callback_url = urljoin(callback_url, '?user_id={}'.format(user_id))
-    print(callback_url)
     auth_url = fs.get_authorize_url(callback_url=callback_url)
     return JsonResponse({"url": auth_url, "success": True})
 

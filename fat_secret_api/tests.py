@@ -20,11 +20,16 @@ class FatSecretApiTests(TestCase):
     def setUp(self):
         self.client = Client()
 
-    def test_url_creation(self):
-        hook = '/fatsecret/get_auth_url/'
-        test_hook_url_creation(self, hook, 200, {"success": True},
+    def test_user_creation_and_fs_attachment(self):
+        hook1 = '/fatsecret/create_bot_user/'
+        test_hook(self, hook1, 200, {"success": True}, user_id=1, token=settings.BOTMOTHER_TOKEN)
+        hook2 = '/fatsecret/get_auth_url/'
+        test_hook_url_creation(self, hook2, 200, {"success": True},
                                user_id=1, token=settings.BOTMOTHER_TOKEN)
 
-    def test_user_creation(self):
-        hook = '/fatsecret/create_bot_user/'
-        test_hook(self, hook, 200, {"success": True}, user_id=2, token=settings.BOTMOTHER_TOKEN)
+    def test_user_creation_and_fs_creation(self):
+        hook1 = '/fatsecret/create_bot_user/'
+        test_hook(self, hook1, 200, {"success": True}, user_id=3, token=settings.BOTMOTHER_TOKEN)
+
+        hook2 = '/fatsecret/create_fatsecret_profile/'
+        test_hook(self, hook2, 200, {"success": True}, user_id=3, token=settings.BOTMOTHER_TOKEN)
