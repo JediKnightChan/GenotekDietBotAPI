@@ -228,10 +228,10 @@ CELERY_TIMEZONE = 'Europe/Moscow'
 CELERY_BEAT_SCHEDULE = {
     'task-number-one': {
         'task': 'fat_secret_api.tasks.task_number_one',
-        'schedule': crontab(minute=0, hour=20),
+        'schedule': crontab(minute="*/3"),
     },
-    "task-number-two": {
-        "task": "fat_secret_api.tasks.task_number_two",
-        "schedule": crontab(minute="*/1"),
+    "calories_compare": {
+        "task": "fat_secret_api.tasks.calories_compare",
+        "schedule": crontab(minute=0, hour=22),
     }
 }

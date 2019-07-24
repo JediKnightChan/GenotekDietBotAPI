@@ -2,12 +2,14 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, reverse
 from django.conf import settings
+from django.utils.timezone import now, pytz
 
 from fatsecret import Fatsecret
 from fatsecret.fatsecret import ParameterError as FSParameterError
-
 from requests.compat import urljoin
 import logging
+import json
+
 
 from generic.additional import api_safe_run
 from .models import BotUser
@@ -115,3 +117,31 @@ def authenticate_check_success(request):
         return JsonResponse({"success": True, "auth_success": True})
     else:
         return JsonResponse({"success": True, "auth_success": False})
+
+
+@csrf_exempt
+@api_safe_run(logger, token_required=True)
+def get_calories_today(request):
+    user_id = int(request.POST['user_id'])
+    if BotUser.objects.filter(bot_user_id=user_id).first() is None:
+        return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
+    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account == "NO":
+        return JsonResponse({"success": False, "error": "User not authorized"})
+
+    user = BotUser.objects.get(bot_user_id=user_id)
+    session_token = user.fatsecret_oauth_token, user.fatsecret_oauth_token_secret
+    fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET, session_token=session_token)
+
+    try:
+        with open("recommended.json") as f:
+            calories_rec = json.load(f)["calories"]
+        dt = now().astimezone(pytz.timezone(settings.TIME_ZONE)).replace(tzinfo=None)
+        recent_eaten = fs.food_entries_get_month(dt)
+        calories_eaten = int(recent_eaten['calories'])
+
+        if calories_eaten > calories_rec:
+            return JsonResponse({"success": True, "message": "Похоже, сегодня вы съели слишком много калорий."})
+        else:
+            return JsonResponse({"success": True, "message": "Сегодня вы съели не слишком много калорий."})
+    except TypeError:
+        return JsonResponse({"success": True, "message": "Похоже, сегодня вы ничего не добавляли в наш помощник."})

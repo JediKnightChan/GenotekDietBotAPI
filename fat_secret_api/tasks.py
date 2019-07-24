@@ -1,12 +1,29 @@
 from __future__ import absolute_import, unicode_literals
 from celery import task
+import requests
 
 
 @task()
 def task_number_one():
     print("I am task one!")
 
-@task
-def task_number_two():
-    with open("1.txt", "a") as f:
-        f.write("I was here!\n")
+
+j = {
+    "platform": "any",
+    "users": "everyone",
+    "data": {}
+}
+
+calory_bm_url = "https://app.botmother.com/api/bot/action/" \
+                "d3-RN_UEZ/BiYClICEDgCMDoDhBZCnDkBZCBQuDoBQDglD6B3CVButDsD4DrCFD2DIDNCsDmCv"
+
+j = {
+    "platform": "any",
+    "users": "everyone",
+    "data": {}
+}
+
+
+@task()
+def calories_compare():
+    requests.post(calory_bm_url, json=j)
