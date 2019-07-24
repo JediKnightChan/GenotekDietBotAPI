@@ -143,5 +143,5 @@ def get_calories_today(request):
             return JsonResponse({"success": True, "message": "Похоже, сегодня вы съели слишком много калорий."})
         else:
             return JsonResponse({"success": True, "message": "Сегодня вы съели не слишком много калорий."})
-    except TypeError:
+    except KeyError:
         return JsonResponse({"success": True, "message": "Похоже, сегодня вы ничего не добавляли в наш помощник."})
