@@ -227,7 +227,11 @@ CELERY_TIMEZONE = 'Europe/Moscow'
 # Other Celery settings
 CELERY_BEAT_SCHEDULE = {
     'task-number-one': {
-        'task': 'app1.tasks.task_number_one',
+        'task': 'fat_secret_api.tasks.task_number_one',
         'schedule': crontab(minute=0, hour=20),
     },
+    "task-number-two": {
+        "task": "fat_secret_api.tasks.task_number_two",
+        "schedule": crontab(minute="*/1"),
+    }
 }
