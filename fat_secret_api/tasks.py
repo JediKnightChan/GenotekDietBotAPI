@@ -8,4 +8,5 @@ def task_number_one():
 
 @task
 def task_number_two():
-    print("I am task number two!")
+    with open("1.txt", "a") as f:
+        f.write("I was here!\n")
