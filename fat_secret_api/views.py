@@ -10,7 +10,6 @@ from requests.compat import urljoin
 import logging
 import json
 
-
 from generic.additional import api_safe_run
 from .models import BotUser
 
@@ -131,17 +130,20 @@ def get_calories_today(request):
     user = BotUser.objects.get(bot_user_id=user_id)
     session_token = user.fatsecret_oauth_token, user.fatsecret_oauth_token_secret
     fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET, session_token=session_token)
+    dt = now().astimezone(pytz.timezone(settings.TIME_ZONE)).replace(tzinfo=None)
 
-    try:
-        with open("recommended.json") as f:
-            calories_rec = json.load(f)["calories"]
-        dt = now().astimezone(pytz.timezone(settings.TIME_ZONE)).replace(tzinfo=None)
-        recent_eaten = fs.food_entries_get_month(dt)
-        calories_eaten = int(recent_eaten['calories'])
-
-        if calories_eaten > calories_rec:
-            return JsonResponse({"success": True, "message": "Похоже, сегодня вы съели слишком много калорий."})
-        else:
-            return JsonResponse({"success": True, "message": "Сегодня вы съели не слишком много калорий."})
-    except KeyError:
+    with open("recommended.json") as f:
+        calories_rec = json.load(f)["calories"]
+    dt = now().astimezone(pytz.timezone(settings.TIME_ZONE)).replace(tzinfo=None)
+    recent_eaten = fs.food_entries_get(date=dt)
+    if not recent_eaten:
         return JsonResponse({"success": True, "message": "Похоже, сегодня вы ничего не добавляли в наш помощник."})
+
+    calories_eaten = []
+    for food_item in recent_eaten:
+        calories_eaten.append(int(food_item['calories']))
+    calories_eaten = sum(calories_eaten)
+    if calories_eaten > calories_rec:
+        return JsonResponse({"success": True, "message": "Похоже, сегодня вы съели слишком много калорий."})
+    else:
+        return JsonResponse({"success": True, "message": "Сегодня вы съели не слишком много калорий."})
