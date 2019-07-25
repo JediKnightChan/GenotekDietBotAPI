@@ -6,7 +6,7 @@ import json
 from .additional import hour_to_meal
 
 
-def test_unstable_hook(test_obj, hook, code, result, unstable_param, **request_kwargs):
+def test_not_constant_hook(test_obj, hook, code, result, unstable_param, **request_kwargs):
     response = test_obj.client.post(hook, create_request(**request_kwargs),
                                     content_type="application/json")
     test_obj.assertEqual(response.status_code, code)
@@ -34,8 +34,8 @@ class FatSecretApiTests(TestCase):
         hook1 = '/fatsecret/create_bot_user/'
         test_hook(self, hook1, 200, {"success": True}, user_id=1, token=settings.BOTMOTHER_TOKEN)
         hook2 = '/fatsecret/get_auth_url/'
-        test_unstable_hook(self, hook2, 200, {"success": True}, 'url',
-                           user_id=1, token=settings.BOTMOTHER_TOKEN)
+        test_not_constant_hook(self, hook2, 200, {"success": True}, 'url',
+                               user_id=1, token=settings.BOTMOTHER_TOKEN)
 
     def test_hungry_user_creation_and_fs_creation(self):
         hook1 = '/fatsecret/create_bot_user/'
@@ -59,9 +59,9 @@ class FatSecretApiTests(TestCase):
                   token=settings.BOTMOTHER_TOKEN)
 
         hook5 = '/fatsecret/create_food_entry/'
-        test_hook(self, hook5, 200, {"success": True}, user_id=4, token=settings.BOTMOTHER_TOKEN, food_id=1884,
-                  serving_id=50564, number_of_units=200)
+        test_not_constant_hook(self, hook5, 200, {"success": True}, "entry_id", user_id=4, token=settings.BOTMOTHER_TOKEN,
+                               food_id=1884, serving_id=50564, number_of_units=200)
 
         hook6 = '/fatsecret/get_calories_today/'
-        test_unstable_hook(self, hook6, 200, {'success': True}, 'message',
-                           user_id=4, token=settings.BOTMOTHER_TOKEN)
+        test_not_constant_hook(self, hook6, 200, {'success': True}, "message",
+                               user_id=4, token=settings.BOTMOTHER_TOKEN)

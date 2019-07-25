@@ -227,5 +227,5 @@ def create_food_entry(request):
     dt = now().astimezone(pytz.timezone(settings.TIME_ZONE)).replace(tzinfo=None)
     meal = hour_to_meal(dt.hour)
     entry_name = "{}: {}".format(dt.ctime(), fs.food_get(food_id)['food_name'])
-    fs.food_entry_create(food_id, entry_name, serving_id, number_of_units, meal)
-    return JsonResponse({"success": True})
+    entry_id_dict = fs.food_entry_create(food_id, entry_name, serving_id, number_of_units, meal)
+    return JsonResponse({"success": True, "entry_id": entry_id_dict["value"]})
