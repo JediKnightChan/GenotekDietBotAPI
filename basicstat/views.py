@@ -17,4 +17,3 @@ def body_mass_index(request):
         height /= 100
     bmi = round(mass / height**2)
     return JsonResponse({'success': True, 'bmi': bmi})
-

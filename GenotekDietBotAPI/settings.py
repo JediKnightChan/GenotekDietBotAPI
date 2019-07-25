@@ -199,7 +199,7 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins', 'console'],
+            'handlers': ['mail_admins', 'console', 'debug_file', 'production_file'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -224,6 +224,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Moscow'
 
+"""
 # Other Celery settings
 CELERY_BEAT_SCHEDULE = {
     'task-number-one': {
@@ -235,3 +236,4 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute=0, hour=22),
     }
 }
+"""
