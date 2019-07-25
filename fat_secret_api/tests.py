@@ -38,3 +38,13 @@ class FatSecretApiTests(TestCase):
         test_hook(self, hook3, 200, {"success": True,
                                      "message": "Похоже, сегодня вы ничего не добавляли в наш помощник."},
                   user_id=4, token=settings.BOTMOTHER_TOKEN)
+
+        hook = '/fatsecret/recognise_image/'
+        test_hook(self, hook, 200, {'food_ids': ['1884', '1892', '1894', '1882'],
+                                    'food_names': ['Pork and Beef Sausage',
+                                                   'Smoked Pork Sausage Link',
+                                                   'Smoked Pork Sausage',
+                                                   'Country Style Pork Sausage'],
+                                    'success': True},
+                  image_url='https://www.apkholding.ru/upload/medialibrary/5cf/5cfef1ae3d03537d1c715d37414828a9.jpg',
+                  user_id=4, token=settings.BOTMOTHER_TOKEN)

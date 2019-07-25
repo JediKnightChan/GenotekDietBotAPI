@@ -6,6 +6,7 @@ from django.utils.timezone import now, pytz
 
 from fatsecret import Fatsecret
 from fatsecret.fatsecret import ParameterError as FSParameterError
+import requests
 from requests.compat import urljoin
 import logging
 import json
@@ -14,6 +15,12 @@ from generic.additional import api_safe_run
 from .models import BotUser
 
 logger = logging.getLogger(__name__)
+
+food_recognition_url = 'https://api.clarifai.com/v2/models/bd367be194cf45149e75f01d59f77ba7/outputs'
+food_recognition_headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Key {}".format(settings.FOOD_RECOGNITION_API_KEY),
+}
 
 
 @csrf_exempt
@@ -134,7 +141,6 @@ def get_calories_today(request):
 
     with open("recommended.json") as f:
         calories_rec = json.load(f)["calories"]
-    dt = now().astimezone(pytz.timezone(settings.TIME_ZONE)).replace(tzinfo=None)
     recent_eaten = fs.food_entries_get(date=dt)
     if not recent_eaten:
         return JsonResponse({"success": True, "message": "Похоже, сегодня вы ничего не добавляли в наш помощник."})
@@ -147,3 +153,41 @@ def get_calories_today(request):
         return JsonResponse({"success": True, "message": "Похоже, сегодня вы съели слишком много калорий."})
     else:
         return JsonResponse({"success": True, "message": "Сегодня вы съели не слишком много калорий."})
+
+
+@csrf_exempt
+@api_safe_run(logger, token_required=True)
+def recognise_image(request):
+    image_url = request.POST['image_url']
+    user_id = int(request.POST['user_id'])
+    if BotUser.objects.filter(bot_user_id=user_id).first() is None:
+        return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
+    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account == "NO":
+        return JsonResponse({"success": False, "error": "User not authorized"})
+
+    api_request_body = {
+        "inputs": [
+            {
+                "data": {
+                    "image": {
+                        "url": image_url
+                    }
+                }
+            }
+        ]
+    }
+    r = requests.post(food_recognition_url, data=json.dumps(api_request_body), headers=food_recognition_headers)
+    response_body = r.json()
+    possible_products = list(filter(lambda p: p["value"] > 0.8, response_body["outputs"][0]["data"]["concepts"]))[:4]
+    possible_products = " ".join(map(lambda p: p["name"], possible_products))
+
+    user = BotUser.objects.get(bot_user_id=user_id)
+    session_token = user.fatsecret_oauth_token, user.fatsecret_oauth_token_secret
+    fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET, session_token=session_token)
+
+    food_names = []
+    food_ids = []
+    for food_item in fs.foods_search(possible_products)[:4]:
+        food_names.append(food_item["food_name"])
+        food_ids.append(food_item["food_id"])
+    return JsonResponse({"success": True, "food_names": food_names, "food_ids": food_ids})
