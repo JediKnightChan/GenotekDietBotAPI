@@ -204,7 +204,7 @@ def get_serving_for_food_id(request):
         needed_serving = servings
     else:
         needed_serving = servings[-1]
-    measure = needed_serving["measurement_description"]
+    measure = needed_serving["metric_serving_unit"]
     serving_id = needed_serving["serving_id"]
     return JsonResponse({"success": True, "measure": measure, "serving_id": serving_id})
 
