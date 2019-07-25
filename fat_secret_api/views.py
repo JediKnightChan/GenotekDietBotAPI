@@ -191,3 +191,14 @@ def recognise_image(request):
         food_names.append(food_item["food_name"])
         food_ids.append(food_item["food_id"])
     return JsonResponse({"success": True, "food_names": food_names, "food_ids": food_ids})
+
+
+@csrf_exempt
+@api_safe_run(logger, token_required=True)
+def get_serving_for_food_id(request):
+    food_id = str(request.POST['food_id'])
+    fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
+    needed_serving = fs.food_get(food_id)["servings"]["serving"][-1]
+    measure = needed_serving["measurement_description"]
+    serving_id = needed_serving["serving_id"]
+    return JsonResponse({"success": True, "measure": measure, "serving_id": serving_id})

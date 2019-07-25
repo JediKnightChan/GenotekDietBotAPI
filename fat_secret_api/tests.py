@@ -39,12 +39,16 @@ class FatSecretApiTests(TestCase):
                                      "message": "Похоже, сегодня вы ничего не добавляли в наш помощник."},
                   user_id=4, token=settings.BOTMOTHER_TOKEN)
 
-        hook = '/fatsecret/recognise_image/'
-        test_hook(self, hook, 200, {'food_ids': ['1884', '1892', '1894', '1882'],
-                                    'food_names': ['Pork and Beef Sausage',
-                                                   'Smoked Pork Sausage Link',
-                                                   'Smoked Pork Sausage',
-                                                   'Country Style Pork Sausage'],
-                                    'success': True},
+        hook4 = '/fatsecret/recognise_image/'
+        test_hook(self, hook4, 200, {'food_ids': ['1884', '1892', '1894', '1882'],
+                                     'food_names': ['Pork and Beef Sausage',
+                                                    'Smoked Pork Sausage Link',
+                                                    'Smoked Pork Sausage',
+                                                    'Country Style Pork Sausage'],
+                                     'success': True},
                   image_url='https://www.apkholding.ru/upload/medialibrary/5cf/5cfef1ae3d03537d1c715d37414828a9.jpg',
                   user_id=4, token=settings.BOTMOTHER_TOKEN)
+
+        hook5 = '/fatsecret/get_serving_for_food_id/'
+        test_hook(self, hook5, 200, {"success": True, "measure": "g", "serving_id": "50564"}, food_id=1884,
+                  token=settings.BOTMOTHER_TOKEN)

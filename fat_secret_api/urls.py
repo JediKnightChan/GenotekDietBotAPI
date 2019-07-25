@@ -10,5 +10,6 @@ urlpatterns = [
     path('need_fatsecret_account/', views.need_fatsecret_account, name='need_fatsecret_account'),
     path('auth_check_success/', views.authenticate_check_success, name='authenticate_check_success'),
     path('get_calories_today/', views.get_calories_today, name='get_calories_today'),
-    path('recognise_image/', views.recognise_image, name='recognise_image')
+    path('recognise_image/', views.recognise_image, name='recognise_image'),
+    path('get_serving_for_food_id/', views.get_serving_for_food_id, name='get_serving_for_food_id'),
 ]
