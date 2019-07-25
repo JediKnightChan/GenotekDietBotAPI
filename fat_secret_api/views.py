@@ -199,7 +199,11 @@ def recognise_image(request):
 def get_serving_for_food_id(request):
     food_id = str(request.POST['food_id'])
     fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
-    needed_serving = fs.food_get(food_id)["servings"]["serving"][-1]
+    servings = fs.food_get(food_id)["servings"]["serving"]
+    if isinstance(servings, dict):
+        needed_serving = servings
+    else:
+        needed_serving = servings[-1]
     measure = needed_serving["measurement_description"]
     serving_id = needed_serving["serving_id"]
     return JsonResponse({"success": True, "measure": measure, "serving_id": serving_id})
