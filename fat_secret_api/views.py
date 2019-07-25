@@ -12,6 +12,7 @@ import logging
 import json
 
 from generic.additional import api_safe_run
+from .additional import hour_to_meal
 from .models import BotUser
 
 logger = logging.getLogger(__name__)
@@ -202,3 +203,26 @@ def get_serving_for_food_id(request):
     measure = needed_serving["measurement_description"]
     serving_id = needed_serving["serving_id"]
     return JsonResponse({"success": True, "measure": measure, "serving_id": serving_id})
+
+
+@csrf_exempt
+@api_safe_run(logger, token_required=True)
+def create_food_entry(request):
+    user_id = int(request.POST['user_id'])
+    food_id = str(request.POST['food_id'])
+    serving_id = str(request.POST['serving_id'])
+    number_of_units = float(request.POST['number_of_units'])
+
+    if BotUser.objects.filter(bot_user_id=user_id).first() is None:
+        return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
+    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account == "NO":
+        return JsonResponse({"success": False, "error": "User not authorized"})
+
+    user = BotUser.objects.get(bot_user_id=user_id)
+    session_token = user.fatsecret_oauth_token, user.fatsecret_oauth_token_secret
+    fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET, session_token=session_token)
+    dt = now().astimezone(pytz.timezone(settings.TIME_ZONE)).replace(tzinfo=None)
+    meal = hour_to_meal(dt.hour)
+    entry_name = "{}: {}".format(dt.ctime(), fs.food_get(food_id)['food_name'])
+    fs.food_entry_create(food_id, entry_name, serving_id, number_of_units, meal)
+    return JsonResponse({"success": True})
