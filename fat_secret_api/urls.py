@@ -12,6 +12,7 @@ urlpatterns = [
 
     path('get_calories_today/', views.get_calories_today, name='get_calories_today'),
     path('recognise_image/', views.recognise_image, name='recognise_image'),
+    path('text_food_search/', views.text_food_search, name='text_food_search'),
     path('get_serving_for_food_id/', views.get_serving_for_food_id, name='get_serving_for_food_id'),
     path('create_food_entry/', views.create_food_entry, name='create_food_entry'),
 ]

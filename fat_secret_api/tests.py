@@ -54,14 +54,24 @@ class FatSecretApiTests(TestCase):
                   image_url='https://www.apkholding.ru/upload/medialibrary/5cf/5cfef1ae3d03537d1c715d37414828a9.jpg',
                   user_id=4, token=settings.BOTMOTHER_TOKEN)
 
-        hook4 = '/fatsecret/get_serving_for_food_id/'
-        test_hook(self, hook4, 200, {"success": True, "measure": "g", "serving_id": "50564"}, food_id=1884,
+        hook4 = '/fatsecret/text_food_search/'
+        test_hook(self, hook4, 200, {'food_ids': ['6204', '2144599', '3782349', '5563508'],
+                                     'food_names': ['Tomato and Cucumber Salad with Oil and Vinegar',
+                                                    'Vine-Ripened Tomato Salad',
+                                                    'Lettuce Salad with Tomato',
+                                                    'Tomato Cucumber Salad'],
+                                     'success': True},
+                  search_query="tomato salad", user_id=4, token=settings.BOTMOTHER_TOKEN)
+
+        hook5 = '/fatsecret/get_serving_for_food_id/'
+        test_hook(self, hook5, 200, {"success": True, "measure": "g", "serving_id": "50564"}, food_id=1884,
                   token=settings.BOTMOTHER_TOKEN)
 
-        hook5 = '/fatsecret/create_food_entry/'
-        test_not_constant_hook(self, hook5, 200, {"success": True}, "entry_id", user_id=4, token=settings.BOTMOTHER_TOKEN,
+        hook6 = '/fatsecret/create_food_entry/'
+        test_not_constant_hook(self, hook6, 200, {"success": True}, "entry_id", user_id=4,
+                               token=settings.BOTMOTHER_TOKEN,
                                food_id=1884, serving_id=50564, number_of_units=200)
 
-        hook6 = '/fatsecret/get_calories_today/'
-        test_not_constant_hook(self, hook6, 200, {'success': True}, "message",
+        hook7 = '/fatsecret/get_calories_today/'
+        test_not_constant_hook(self, hook7, 200, {'success': True}, "message",
                                user_id=4, token=settings.BOTMOTHER_TOKEN)

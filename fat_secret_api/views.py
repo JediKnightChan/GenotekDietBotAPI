@@ -12,7 +12,7 @@ import logging
 import json
 
 from generic.additional import api_safe_run
-from .additional import hour_to_meal
+from .additional import hour_to_meal, food_search
 from .models import BotUser
 
 logger = logging.getLogger(__name__)
@@ -127,13 +127,9 @@ def authenticate_check_success(request):
 
 
 @csrf_exempt
-@api_safe_run(logger, token_required=True)
+@api_safe_run(logger, token_required=True, fs_account_required=True)
 def get_calories_today(request):
     user_id = int(request.POST['user_id'])
-    if BotUser.objects.filter(bot_user_id=user_id).first() is None:
-        return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
-    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account == "NO":
-        return JsonResponse({"success": False, "error": "User not authorized"})
 
     user = BotUser.objects.get(bot_user_id=user_id)
     session_token = user.fatsecret_oauth_token, user.fatsecret_oauth_token_secret
@@ -157,14 +153,10 @@ def get_calories_today(request):
 
 
 @csrf_exempt
-@api_safe_run(logger, token_required=True)
+@api_safe_run(logger, token_required=True, fs_account_required=True)
 def recognise_image(request):
     image_url = request.POST['image_url']
     user_id = int(request.POST['user_id'])
-    if BotUser.objects.filter(bot_user_id=user_id).first() is None:
-        return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
-    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account == "NO":
-        return JsonResponse({"success": False, "error": "User not authorized"})
 
     api_request_body = {
         "inputs": [
@@ -182,16 +174,24 @@ def recognise_image(request):
     possible_products = list(filter(lambda p: p["value"] > 0.8, response_body["outputs"][0]["data"]["concepts"]))[:4]
     possible_products = " ".join(map(lambda p: p["name"], possible_products))
 
-    user = BotUser.objects.get(bot_user_id=user_id)
-    session_token = user.fatsecret_oauth_token, user.fatsecret_oauth_token_secret
-    fs = Fatsecret(settings.CONSUMER_KEY, settings.CONSUMER_SECRET, session_token=session_token)
+    result = food_search(user_id, possible_products)
+    if result:
+        return JsonResponse(result)
+    else:
+        return JsonResponse({"success": False, "error": "Not found"})
 
-    food_names = []
-    food_ids = []
-    for food_item in fs.foods_search(possible_products)[:4]:
-        food_names.append(food_item["food_name"])
-        food_ids.append(food_item["food_id"])
-    return JsonResponse({"success": True, "food_names": food_names, "food_ids": food_ids})
+
+@csrf_exempt
+@api_safe_run(logger, token_required=True, fs_account_required=True)
+def text_food_search(request):
+    user_id = int(request.POST['user_id'])
+    search_query = request.POST['search_query']
+
+    result = food_search(user_id, search_query)
+    if result:
+        return JsonResponse(result)
+    else:
+        return JsonResponse({"success": False, "error": "Not found"})
 
 
 @csrf_exempt
@@ -210,7 +210,7 @@ def get_serving_for_food_id(request):
 
 
 @csrf_exempt
-@api_safe_run(logger, token_required=True)
+@api_safe_run(logger, token_required=True, fs_account_required=True)
 def create_food_entry(request):
     user_id = int(request.POST['user_id'])
     food_id = str(request.POST['food_id'])
@@ -219,11 +219,6 @@ def create_food_entry(request):
 
     if number_of_units <= 0:
         return JsonResponse({"success": False, "error": "Number of units must be positive"})
-
-    if BotUser.objects.filter(bot_user_id=user_id).first() is None:
-        return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
-    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account == "NO":
-        return JsonResponse({"success": False, "error": "User not authorized"})
 
     user = BotUser.objects.get(bot_user_id=user_id)
     session_token = user.fatsecret_oauth_token, user.fatsecret_oauth_token_secret

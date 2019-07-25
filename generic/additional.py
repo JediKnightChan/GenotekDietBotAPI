@@ -2,8 +2,10 @@ from django.http import JsonResponse
 from django.conf import settings
 import traceback
 
+from fat_secret_api.models import BotUser
 
-def api_safe_run(logger, token_required=False):
+
+def api_safe_run(logger, token_required=False, fs_account_required=False):
     def decorator(func):
         def func_wrapper(request, *args, **kwargs):
             try:
@@ -13,6 +15,12 @@ def api_safe_run(logger, token_required=False):
                                                                                         request.POST.get('token', None),
                                                                                         settings.BOTMOTHER_TOKEN))
                         return JsonResponse({'error': 'Token mismatched', 'success': False}, status=400)
+                if fs_account_required:
+                    user_id = int(request.POST['user_id'])
+                    if BotUser.objects.filter(bot_user_id=user_id).first() is None:
+                        return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
+                    elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account == "NO":
+                        return JsonResponse({"success": False, "error": "User not authorized"})
                 return func(request, *args, **kwargs)
             except ZeroDivisionError:
                 logger.error("{}: ZeroDivisionError. Body request is {}".format(func.__name__, request.body))
