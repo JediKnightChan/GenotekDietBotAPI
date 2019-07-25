@@ -213,6 +213,9 @@ def create_food_entry(request):
     serving_id = str(request.POST['serving_id'])
     number_of_units = float(request.POST['number_of_units'])
 
+    if number_of_units <= 0:
+        return JsonResponse({"success": False, "error": "Number of units must be positive"})
+
     if BotUser.objects.filter(bot_user_id=user_id).first() is None:
         return JsonResponse({"success": False, "error": "User with this id doesn't exist"})
     elif BotUser.objects.get(bot_user_id=user_id).fatsecret_account == "NO":
