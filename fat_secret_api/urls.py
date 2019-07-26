@@ -1,6 +1,6 @@
 from django.urls import path
-from . import views
 
+from . import views
 
 urlpatterns = [
     path('get_auth_url/', views.get_auth_url, name='get_auth_url'),

@@ -1,6 +1,6 @@
-from django.http import HttpResponse, QueryDict
-
 import json
+
+from django.http import HttpResponse, QueryDict
 
 
 class JSONMiddleware:

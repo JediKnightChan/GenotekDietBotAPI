@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+
 from celery.schedules import crontab
 
 try:
@@ -52,7 +53,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'basicstat',
     'fat_secret_api',
-    'image_recognition',
 ]
 
 MIDDLEWARE = [
