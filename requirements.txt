@@ -1,13 +1,16 @@
 amqp==2.5.0
+Babel==2.7.0
 billiard==3.6.0.0
 celery==4.3.0
 certifi==2019.6.16
 chardet==3.0.4
 Django==2.2.3
+django-phonenumber-field==3.0.1
 fatsecret==0.2.3
 idna==2.8
 isort==4.3.21
 kombu==4.6.3
+phonenumbers==8.10.15
 pyaes==1.6.1
 pyasn1==0.4.5
 pyTelegramBotAPI==3.6.6
