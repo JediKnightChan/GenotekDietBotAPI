@@ -12,9 +12,9 @@ from fatsecret.fatsecret import ParameterError as FSParameterError
 from requests.compat import urljoin
 
 from generic.additional import api_safe_run
+from generic.models import BotUser
 
 from .additional import food_search, hour_to_meal
-from .models import BotUser
 
 logger = logging.getLogger(__name__)
 
@@ -78,10 +78,11 @@ def create_fatsecret_profile(request):
 @csrf_exempt
 @api_safe_run(logger, token_required=True)
 def need_fatsecret_account(request):
-    """ Answers where the bot user had already been authorized in this app.
+    """ Answers whether the bot user already has FS profile in this app.
 
     :request_field integer user_id: BotMother user's platform_id.
 
+    :response_field boolean need: Whether user needs a FS profile.
     :response_field boolean success
     """
 
@@ -161,7 +162,6 @@ def authenticate_check_success(request):
 
     :response_field boolean auth_success: Whether user completed FS account binding.
     :response_field boolean success
-
     """
 
     user_id = int(request.POST['user_id'])

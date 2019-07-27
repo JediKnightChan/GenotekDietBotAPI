@@ -1,7 +1,7 @@
 from django.conf import settings
 from fatsecret import Fatsecret
 
-from .models import BotUser
+from generic.models import BotUser
 
 
 def hour_to_meal(hour):

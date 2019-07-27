@@ -5,7 +5,7 @@ db.sqlite3
 GenotekDietBotAPI/secret_settings.py
 static/admin/
 
-test.py
+temp.py
 tokens.dat.*
 
 *.pyc

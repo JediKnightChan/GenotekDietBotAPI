@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('basicstat/', include('basicstat.urls')),
     path('fatsecret/', include('fat_secret_api.urls')),
+    path('smsapi/', include('sms_api.urls'))
 ]

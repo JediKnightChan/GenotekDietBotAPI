@@ -3,7 +3,7 @@ import traceback
 from django.conf import settings
 from django.http import JsonResponse
 
-from fat_secret_api.models import BotUser
+from generic.models import BotUser
 
 
 def api_safe_run(logger, token_required=False, fs_account_required=False):
