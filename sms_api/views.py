@@ -51,7 +51,7 @@ def create_verification_code(request):
             return JsonResponse({"success": False, "error": "This phone is already used"})
     elif user.phones_changed_at_auth > settings.MAX_PHONE_CHANGES:
         dt_now = now().astimezone(pytz.timezone(settings.TIME_ZONE))
-        time_delta = dt_now - user.last_phone_auth_try
+        time_delta = dt_now - user.last_phone_change_try
         if time_delta < settings.MIN_TD_WHEN_MAX_PHONE_CHANGES_EXCEED:
             # Too many verification requests, user should wait
             seconds_left = (settings.MIN_TD_WHEN_MAX_PHONE_CHANGES_EXCEED - time_delta).seconds
@@ -73,7 +73,7 @@ def create_verification_code(request):
         user.phone_number = phone_number
         user.phone_verification_code = verification_code
         user.phones_changed_at_auth += 1
-        user.last_phone_auth_try = now().astimezone(pytz.timezone(settings.TIME_ZONE))
+        user.last_phone_change_try = now().astimezone(pytz.timezone(settings.TIME_ZONE))
         user.save()
 
     return JsonResponse({"success": True})
@@ -105,7 +105,7 @@ def check_verification_code(request):
         return JsonResponse({"success": False, "error": "User with this id has verified his phone"})
     elif user.codes_changed_at_auth > settings.MAX_CODE_CHANGES:
         dt_now = now().astimezone(pytz.timezone(settings.TIME_ZONE))
-        time_delta = dt_now - user.last_phone_auth_try
+        time_delta = dt_now - user.last_code_confirmation_try
         if time_delta < settings.MIN_TD_WHEN_MAX_CODE_CHANGES_EXCEED:
             # Too many verification requests, user should wait
             seconds_left = (settings.MIN_TD_WHEN_MAX_CODE_CHANGES_EXCEED - time_delta).seconds
@@ -117,7 +117,7 @@ def check_verification_code(request):
     # Comparing codes
     if verification_code != user.phone_verification_code:
         user.codes_changed_at_auth += 1
-        user.last_phone_auth_try = now().astimezone(pytz.timezone(settings.TIME_ZONE))
+        user.last_code_confirmation_try = now().astimezone(pytz.timezone(settings.TIME_ZONE))
         user.save()
         return JsonResponse({"success": False, "error": "Wrong code"})
     else:

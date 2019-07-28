@@ -24,8 +24,10 @@ class BotUser(models.Model):
     phone_verification_code = models.CharField(blank=True, null=True, max_length=10)
     # How many times user changed codes at verification stage
     codes_changed_at_auth = models.IntegerField(default=0)
-    # Last time when user tried to change code or unverified phone number
-    last_phone_auth_try = models.DateTimeField(blank=True, null=True)
+    # Last time when user tried to change unverified phone number
+    last_phone_change_try = models.DateTimeField(blank=True, null=True)
+    # Last time when user tried to confirm code
+    last_code_confirmation_try = models.DateTimeField(blank=True, null=True)
 
     fatsecret_oauth_token = models.CharField(max_length=100, blank=True, null=True)
     fatsecret_oauth_token_secret = models.CharField(max_length=100, blank=True, null=True)
