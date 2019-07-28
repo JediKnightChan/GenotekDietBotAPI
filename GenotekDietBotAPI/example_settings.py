@@ -5,6 +5,8 @@ import datetime
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'Do you need to know me?'
 
+CALORIES_HOOK = ''
+
 FOOD_RECOGNITION_API_KEY = 'api key'
 
 CONSUMER_KEY = "key"

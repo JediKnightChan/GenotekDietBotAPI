@@ -1,5 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
+from django.conf import settings
+
 import requests
 from celery import task
 
@@ -15,16 +17,7 @@ j = {
     "data": {}
 }
 
-calory_bm_url = "https://app.botmother.com/api/bot/action/" \
-                "d3-RN_UEZ/BiYClICEDgCMDoDhBZCnDkBZCBQuDoBQDglD6B3CVButDsD4DrCFD2DIDNCsDmCv"
-
-j = {
-    "platform": "any",
-    "users": "everyone",
-    "data": {}
-}
-
 
 @task()
 def calories_compare():
-    requests.post(calory_bm_url, json=j)
+    requests.post(settings.CALORIES_HOOK, json=j)
