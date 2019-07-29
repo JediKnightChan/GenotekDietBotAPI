@@ -16,6 +16,7 @@ class BotUser(models.Model):
         choices=FAT_SECRET_ACCOUNT,
         default='NO'
     )
+    bmi = models.IntegerField(blank=True, null=True)
 
     phone_number = PhoneNumberField(region="RU", blank=True, null=True, unique=True)
     phone_number_verified = models.BooleanField(default=False)

@@ -23,6 +23,7 @@ class FatSecretApiTests(TestCase):
     def test_user_creation_and_fs_attachment(self):
         hook1 = '/fatsecret/create_bot_user/'
         test_hook(self, hook1, 200, {"success": True}, user_id=1, token=settings.BOTMOTHER_TOKEN)
+
         hook2 = '/fatsecret/get_auth_url/'
         test_not_constant_hook(self, hook2, 200, {"success": True}, 'url',
                                user_id=1, token=settings.BOTMOTHER_TOKEN)

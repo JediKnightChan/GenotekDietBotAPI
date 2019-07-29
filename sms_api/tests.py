@@ -53,3 +53,15 @@ class SmsApiTests(TestCase):
 
         test_not_constant_hook(self, hook3, 200, {"success": False, "error": "Try later"}, "seconds_left",
                                user_id=bot_user_id, verification_code=wrong_code, token=settings.BOTMOTHER_TOKEN)
+
+    def test_zero_phone_number(self):
+        bot_user_id = 2
+        phone = "000078998887777"
+
+        hook1 = "/fatsecret/create_bot_user/"
+        test_hook(self, hook1, 200, {"success": True}, user_id=bot_user_id, token=settings.BOTMOTHER_TOKEN)
+
+        hook2 = "/smsapi/create_verification_code/"
+        test_hook(self, hook2, 200, {'error': 'Phone number wrong', 'success': False}, user_id=bot_user_id,
+                  phone_number=phone, token=settings.BOTMOTHER_TOKEN)
+

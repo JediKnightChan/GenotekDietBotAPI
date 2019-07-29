@@ -30,7 +30,7 @@ food_recognition_headers = {
 def create_bot_user(request):
     """ Creates BotUser model instance for the specified platform_id.
 
-    :request_field integer user_id: BotMother user's platform_id.
+    :request_field integer user_id: BotMother user platform_id.
 
     :response_field boolean success
     """
@@ -80,7 +80,7 @@ def create_fatsecret_profile(request):
 def need_fatsecret_account(request):
     """ Answers whether the bot user already has FS profile in this app.
 
-    :request_field integer user_id: BotMother user's platform_id.
+    :request_field integer user_id: BotMother user platform_id.
 
     :response_field boolean need: Whether user needs a FS profile.
     :response_field boolean success
