@@ -34,7 +34,7 @@ def create_verification_code(request):
 
     try:
         phone_number = phonenumbers.parse(phone_number, "RU")
-        if phone_number.italian_leading_zero:
+        if phone_number.italian_leading_zero or len(str(phone_number.national_number)) != 10:
             return JsonResponse({"success": False, "error": "Phone number wrong"})
     except phonenumbers.phonenumberutil.NumberParseException:
         return JsonResponse({"success": False, "error": "Phone number wrong"})
